@@ -40,12 +40,14 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { onUpdated, ref, watch } from 'vue'
 
 const props = defineProps(['columns', 'items', 'onSaveUpdate', 'onDeleteItem'])
 
 const localItems = ref([])
-
+onUpdated(()=>{
+  console.log('List Item updated')
+})
 watch(
   () => props.items,
   (newItems) => {
