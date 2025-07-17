@@ -2,19 +2,24 @@
 import '@/assets/formStyle.css'
 import { watch, ref, onMounted } from 'vue'
 import { usePatientStore } from '@/stores/usePatientStore'
+import { useDoctorStore } from '@/stores/useDoctorStore'
 import ListItem from './listItem.vue'
 
 const searchText = ref('')
 const store = usePatientStore()
+const doctorStore = useDoctorStore()
 const errors = ref({ patientName: '', diagnosis: '', doctorId: '' })
+
+const newPatient = ref({ patientName: '', diagnosis: '', doctorId: '' })
 
 watch(searchText, (val) => {
   store.setSearch(val)
 })
+
 onMounted(() => {
   store.fetchPatients()
+  doctorStore.fetchDoctors()
 })
-const newPatient = ref({ patientName: '', diagnosis: '', doctorId: '' })
 
 function validateStringField(value, fieldName, min = 2, max = 30) {
   if (!value) return `${fieldName} is required.`
@@ -26,13 +31,9 @@ function validateStringField(value, fieldName, min = 2, max = 30) {
 
 function validateDoctorId(value) {
   if (!value) return 'Doctor ID is required.'
-  if (!/^\d+$/.test(value)) return 'Doctor ID must be a number.'
+  if (!doctorStore.doctors.find(doc => doc.id == value)) return 'Select a valid doctor.'
   return ''
 }
-
-onMounted(() => {
-  store.fetchPatients()
-})
 
 function addPatient() {
   errors.value.patientName = validateStringField(newPatient.value.patientName, 'Patient Name')
@@ -49,6 +50,19 @@ function addPatient() {
 }
 
 const columns = ['patientName', 'diagnosis', 'doctorId']
+
+// For editing doctorId in ListItem
+function handleSaveUpdate(item) {
+  // Validate before saving
+  const nameErr = validateStringField(item.patientName, 'Patient Name')
+  const diagErr = validateStringField(item.diagnosis, 'Diagnosis')
+  const docErr = validateDoctorId(item.doctorId)
+  if (nameErr || diagErr || docErr) {
+    // Optionally show error (could emit event or use a global error)
+    return
+  }
+  store.updatePatient(item.id, item)
+}
 </script>
 
 <template>
@@ -60,7 +74,12 @@ const columns = ['patientName', 'diagnosis', 'doctorId']
       <span v-if="errors.patientName" class="error">{{ errors.patientName }}</span>
       <input v-model="newPatient.diagnosis" placeholder="Diagnosis" />
       <span v-if="errors.diagnosis" class="error">{{ errors.diagnosis }}</span>
-      <input v-model="newPatient.doctorId" placeholder="Doctor ID" />
+      <select v-model="newPatient.doctorId">
+        <option value="">Select Doctor</option>
+        <option v-for="doc in doctorStore.doctors" :key="doc.id" :value="doc.id">
+          {{ doc.id }} - {{ doc.name }}
+        </option>
+      </select>
       <span v-if="errors.doctorId" class="error">{{ errors.doctorId }}</span>
       <button type="submit">Add Patient</button>
     </form>
@@ -68,9 +87,26 @@ const columns = ['patientName', 'diagnosis', 'doctorId']
       :columns="columns"
       :items="store.filteredItems"
       :onDeleteItem="store.deletePatient"
-      :onSaveUpdate="(item) => store.updatePatient(item.id, item)"
+      :onSaveUpdate="handleSaveUpdate"
       @sort="store.setSort"
-    />
+      v-slot="{ item, columns }"
+    >
+      <template v-for="col in columns" :key="col">
+        <template v-if="item.isEditing && col === 'doctorId'">
+          <select v-model="item.doctorId">
+            <option value="">Select Doctor</option>
+            <option v-for="doc in doctorStore.doctors" :key="doc.id" :value="doc.id">
+              {{ doc.id }} - {{ doc.name }}
+            </option>
+          </select>
+        </template>
+        <template v-else-if="col === 'doctorId'">
+          <span>
+            {{ (doctorStore.doctors.find(doc => doc.id == item.doctorId) ? doctorStore.doctors.find(doc => doc.id == item.doctorId).name : item.doctorId) }}
+          </span>
+        </template>
+      </template>
+    </ListItem>
   </div>
 </template>
 
