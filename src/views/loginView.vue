@@ -15,23 +15,25 @@ import axios from 'axios'
 import { useRouter } from 'vue-router' 
 const uname= ref('')
 const pass = ref('')
-const credentials = ref({name:'',pass:''})
+const expertise = ref('')
+const credentials = ref({name:'',expertise:''})
 
 const router = useRouter() 
 async function handleLogin(){
    try {
      credentials.value.name = uname.value;
      credentials.value.pass = pass.value;
-
      const res = await axios.post('http://localhost:3333/login', credentials.value);
      console.log(res.data);
 
-     if (res.data === 'Verified') {
-       console.log('Login successful! Redirecting to home...');
+     if (res.data.message === 'Verified') {
+      console.log(res.data.token)
+      localStorage.setItem('jwt_token', res.data.token)
+       console.log(res.data.token)
+       
        router.push('/doc'); 
      } else {
-       console.log('Login failed: Server did not return "Verified".');
-       
+       console.log('Login failed: Server did not return "Verified".');   
      }
    } catch (error) {
      console.error('An error occurred during login:', error);

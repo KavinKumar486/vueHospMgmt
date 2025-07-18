@@ -13,7 +13,7 @@ export const useDoctorStore = defineStore('doctor', {
   }),
 getters: {
   filteredItems: (state) => {
-    let result = [...state.doctors]
+    let result =  Array.isArray(state.doctors) ? [...state.doctors] : []
     if (state.searchText.trim()) {
       const text = state.searchText.trim().toLowerCase()
       result = result.filter((item) =>
@@ -50,11 +50,18 @@ getters: {
     }
   },
     async fetchDoctors() {
-      this.loading = true
+      this.loading = true;
+      this.error=null;
       try {
+        console.log('sending request')
         const res = await axios.get(`${baseURL}/doctor/getDoctor`)
-        this.doctors = res.data.data
-      } finally {
+        console.log()
+        this.doctors =  Array.isArray(res.data.data) ? res.data.data : []
+      } catch(err){
+        console.error('Fetch doctor Error',err)
+        this.error = 'Failed to fetch doctor'
+      }
+      finally {
         this.loading = false
       }
     },

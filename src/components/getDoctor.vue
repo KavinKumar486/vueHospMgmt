@@ -50,6 +50,8 @@ const columns = ['name', 'expertise']
       <span v-if="errors.expertise" class="error">{{ errors.expertise }}</span>
       <button type="submit">Add Doctor</button>
     </form>
+    <div v-if="store.loading">Loading doctors...</div>
+    <div v-else-if="store.error" class="error">{{ store.error }}</div>
     <ListItem
       :columns="columns"
       :items="store.filteredItems"

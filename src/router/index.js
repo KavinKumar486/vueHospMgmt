@@ -17,8 +17,7 @@ const router = createRouter({
     {
     path:'/doc',
     name:'doctor',
-      component:Doctor
-    
+    component:Doctor
     },
     {
       path:'/patient',
@@ -27,5 +26,4 @@ const router = createRouter({
     }
   ],
 })
-
 export default router
