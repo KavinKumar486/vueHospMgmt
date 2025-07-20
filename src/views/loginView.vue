@@ -29,7 +29,7 @@ async function handleLogin(){
      if (res.data.message === 'Verified') {
       console.log(res.data.token)
       localStorage.setItem('jwt_token', res.data.token)
-       console.log(res.data.token)
+      console.log(res.data.token)
        
        router.push('/doc'); 
      } else {
