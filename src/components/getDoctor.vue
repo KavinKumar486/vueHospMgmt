@@ -3,7 +3,8 @@ import '@/assets/formStyle.css'
 import { watch, ref, onMounted } from 'vue'
 import { useDoctorStore } from '@/stores/useDoctorStore'
 import ListItem from './listItem.vue'
-
+import  { useEntityStore } from '@/stores/entityStore'
+import {} from '@/stores/entityStore'
 const searchText = ref('')
 const store = useDoctorStore()
 const newDoctor = ref({ name: '', expertise: '' })
@@ -22,7 +23,6 @@ function validateStringField(value, fieldName, min = 2, max = 30) {
   if (value.length > max) return `${fieldName} must be at most ${max} characters.`
   return ''
 }
-
 function addDoctor() {
   errors.value.name = validateStringField(newDoctor.value.name, 'Name')
   errors.value.expertise = validateStringField(newDoctor.value.expertise, 'Expertise')
@@ -36,12 +36,17 @@ function addDoctor() {
 const startSearch = () => {
   store.setSearch(searchText.value)
 }
-const columns = ['name', 'expertise']
+
 </script>
 
 <template>
+<nav class="navBar">
+<router-link to="/doc"> Doctor</router-link> |
+<router-link to='/patient'>Patient</router-link>
+
+</nav>
   <div>
-    <h2>Doctor List</h2>
+    <h2>Doctors</h2>
     <input v-model="searchText" @input="startSearch" placeholder="Search..." />
     <form @submit.prevent="addDoctor" style="margin-bottom: 20px;">
       <input v-model="newDoctor.name" placeholder="Name" />

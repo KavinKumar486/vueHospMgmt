@@ -1,11 +1,11 @@
 <template>
 
-<HomeComponent />
+<doctorComponent />
 
 
 </template>
 <script setup>
-import HomeComponent from '../components/getDoctor.vue'
+import doctorComponent from '../components/getDoctor.vue'
 
 </script>
 <style>

@@ -108,3 +108,14 @@ body {
     width:100px;
     border-radius:30%
 }
+.navBar{
+  text-align: center;
+  align-items: center; 
+  height:35px;
+  width:200px; 
+  overflow:hidden;
+  
+}
+.selected{
+  box-shadow: #333;
+}

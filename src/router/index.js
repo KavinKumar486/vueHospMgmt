@@ -14,7 +14,7 @@ const routes = [
     path: '/doc',
     name: 'doctor',
     component: Doctor,
-    meta: { requiresAuth: true }    // Mark as protected
+    meta: { requiresAuth: true }    
   },
   {
     path: '/patient',
@@ -30,15 +30,13 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  console.log(to)
   const token = localStorage.getItem('jwt_token')
   if (to.meta.requiresAuth && !token) {
-    next({ path: '/' })
-  } else if (to.path === '/' && token) {
-    
-    next({ path: '/doc' })
-  } else {
+    next('/')
+  }
+   else {
     next()
   }
 })
-
 export default router

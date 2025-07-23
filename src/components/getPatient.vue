@@ -4,12 +4,12 @@ import { watch, ref, onMounted } from 'vue'
 import { usePatientStore } from '@/stores/usePatientStore'
 import { useDoctorStore } from '@/stores/useDoctorStore'
 import ListItem from './listItem.vue'
-
+import { useEntityStore } from '@/stores/entityStore'
 const searchText = ref('')
 const store = usePatientStore()
 const doctorStore = useDoctorStore()
 const errors = ref({ patientName: '', diagnosis: '', doctorId: '' })
-
+const globalStore  = useEntityStore()
 const newPatient = ref({ patientName: '', diagnosis: '', doctorId: '' })
 
 watch(searchText, (val) => {
@@ -63,9 +63,14 @@ function handleSaveUpdate(item) {
   }
   store.updatePatient(item.id, item)
 }
+
 </script>
 
 <template>
+  <nav class="navBar">
+<router-link to="/doc"> Doctor</router-link> |
+<router-link to='/patient'>Patient</router-link>
+</nav> 
   <div>
     <h2>Patient List</h2>
     <input v-model="searchText" @input="() => store.setSearch(searchText)" placeholder="Search..." />
@@ -101,7 +106,7 @@ function handleSaveUpdate(item) {
           </select>
         </template>
         <template v-else-if="col === 'doctorId'">
-          <span>
+          <span> 
             {{ (doctorStore.doctors.find(doc => doc.id == item.doctorId) ? doctorStore.doctors.find(doc => doc.id == item.doctorId).name : item.doctorId) }}
           </span>
         </template>
